@@ -34,22 +34,43 @@ public class ChestKitsPlugin extends JavaPlugin {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+		Player toGive;
+		boolean fromConsole = false;
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("You can only use this command as a player");
-			return true;
+			if (args.length == 0) {
+				sender.sendMessage("You must specify a target player.");
+				sender.sendMessage("Usage: /ckit (PLAYER) (command)");
+				return true;
+			}
+			toGive = sender.getServer().getPlayer(args[0]);
+			if (toGive == null || !toGive.isOnline()) {
+				sender.sendMessage("The player " + args[0] + " is not online!");
+				return true;
+			}
+			String[] args2 = new String[args.length - 1];
+			for (int i = 1; i < args.length; i++) {
+				args2[i-1] = args[i];
+			}
+			args = args2;
+			fromConsole = true;
+		} else {
+			toGive = (Player)sender;
 		}
 		
 		if (args.length < 1) {
 			sender.sendMessage("Usage: /ckit {kitname}");
 			if (sender.hasPermission("ckit.create")) {
-				sender.sendMessage("Usage: /ckit create {kitname}");
+				sender.sendMessage("Usage: /ckit create {kitName}");
 			}
 			if (sender.hasPermission("ckit.delete")) {
-				sender.sendMessage("Usage: /ckit delete {kitname}");
+				sender.sendMessage("Usage: /ckit delete {kitName}");
 			}
 			if (sender.hasPermission("ckit.save")) {
 				sender.sendMessage("Usage: /ckit save config");
-			}			
+			}
+			if (sender.hasPermission("ckit.give")) {
+				sender.sendMessage("Usage: /ckit give {playerName} {kitName}");
+			}
 			
 			return true;
 		}
@@ -74,8 +95,10 @@ public class ChestKitsPlugin extends JavaPlugin {
 			meta.setLore(Arrays.asList(LORE_KEY));
 			is.setItemMeta(meta);
 			
-			if (!((Player)sender).getInventory().addItem(is).isEmpty()) {
+			if (!toGive.getInventory().addItem(is).isEmpty()) {
 				sender.sendMessage(ChatColor.RED + "Your inventory is too full to hold the kit.");
+			} else if (fromConsole) {
+				toGive.sendMessage(ChatColor.GREEN + "You have been given a " + kit + " kit!");
 			}
 		} else if (args.length == 2) {
 			if (args[0].equals("create")) {
@@ -86,7 +109,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 				
 				String kit = args[1];
 				
-				Player p = (Player)sender;
+				Player p = toGive;
 				
 				List<ItemStack> items = new LinkedList<ItemStack>();
 				for (ItemStack is : p.getInventory()) {
@@ -101,7 +124,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 				sender.sendMessage("Kit '" + kit + "' created. You may want to save the configuration.");
 			} else if (args[0].equals("delete")) {
 				if (!sender.hasPermission("ckit.delete")) {
-					sender.sendMessage(ChatColor.RED + "You are not allowed to create new kits.");
+					sender.sendMessage(ChatColor.RED + "You are not allowed to delete kits.");
 					return true;
 				}
 				
@@ -123,7 +146,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 				
 				config.saveConfig(this);
 				
-				sender.sendMessage("Kits saved to file.");				
+				sender.sendMessage("Kits saved to file.");
 			} else {
 				sender.sendMessage(ChatColor.RED + "Invalid secondary command. Valid secondary commands: create, delete, save config");
 				return true;
