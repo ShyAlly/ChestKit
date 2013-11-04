@@ -1,0 +1,24 @@
+name: ChestKits
+main: com.gmail.fthielisch.chestkits.ChestKitsPlugin
+version: 0.0.1
+author: FinalFred
+
+commands:
+  ckit:
+    description: Give yourself a certain kit, or manage what kits are available.
+    usage: /<command> (subcommand) kitName
+
+permissions:
+  ckit.get.*:
+    description: Allows access to all of the kits.
+    default: op
+  ckit.create:
+    description: Allows you to create new kits.
+    default: op
+  ckit.delete:
+    description: Allows you to delete kits.
+    default: op
+  ckit.save:
+    description: Allows you to save kits to the configuration file.
+    default: op
+
