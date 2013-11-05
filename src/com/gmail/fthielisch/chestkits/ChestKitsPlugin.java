@@ -99,6 +99,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 			} else if (fromConsole) {
 				toGive.sendMessage(ChatColor.GREEN + "You have been given a " + kit + " kit!");
 			}
+			return true;
 		}
 
 		if (args[0].equals("create")) {
