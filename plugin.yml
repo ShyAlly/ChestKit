@@ -21,4 +21,7 @@ permissions:
   ckit.save:
     description: Allows you to save kits to the configuration file.
     default: op
+  ckit.give:
+    description: Allows you to give kits to other people.
+    default: op
 
