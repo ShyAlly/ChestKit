@@ -190,7 +190,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 				toGive.sendMessage(ChatColor.GREEN + "You have been given a " + kit + " kit!");
 			}
 		} else {
-			sender.sendMessage(ChatColor.RED + "Invalid secondary command. Valid secondary commands: create, delete, save config");
+			sender.sendMessage(ChatColor.RED + "Invalid secondary command. Valid secondary commands: create, delete, save config, give");
 			return true;
 		}
 
