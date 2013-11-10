@@ -98,7 +98,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 			}
 			
 			if (cooldownPeriod > 0) {
-				sender.sendMessage(ChatColor.RED + "This kit is currently on cooldown! Please wait another " + (cooldownPeriod / 1000) + " seconds.");
+				sender.sendMessage(ChatColor.RED + "This kit is currently on cooldown! Please wait another " + (int)Math.ceil(cooldownPeriod / 1000.0) + " seconds.");
 				return true;
 			}
 
@@ -167,7 +167,8 @@ public class ChestKitsPlugin extends JavaPlugin {
 			
 			kit.setCooldown(cooldown);
 
-			sender.sendMessage("Kit '" + kitName + "' removed. You may want to save the configuration.");
+			sender.sendMessage("Kit '" + kitName + "' cooldown set to " + kit.getCooldown() + " milliseconds.");
+			sender.sendMessage("You may want to save the configuration.");
 		} else if (args[0].equals("delete")) {
 			if (!sender.hasPermission("ckit.delete")) {
 				sender.sendMessage(ChatColor.RED + "You are not allowed to delete kits.");
