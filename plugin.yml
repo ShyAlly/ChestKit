@@ -24,4 +24,6 @@ permissions:
   ckit.give:
     description: Allows you to give kits to other people.
     default: op
-
+  ckit.cooldown:
+    description: Allows you to give kits cooldowns.
+    default: op
