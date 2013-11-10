@@ -98,7 +98,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 			}
 			
 			if (cooldownPeriod > 0) {
-				sender.sendMessage(ChatColor.RED + "This kit is currently on cooldown! Please wait another " + (int)Math.ceil(cooldownPeriod / 1000.0) + " seconds.");
+				sender.sendMessage(ChatColor.RED + "This kit is currently on cooldown! Please wait for " + ChestKitsTimeFormatter.formatTime((int)Math.ceil(cooldownPeriod / 1000.0)) + ".");
 				return true;
 			}
 
