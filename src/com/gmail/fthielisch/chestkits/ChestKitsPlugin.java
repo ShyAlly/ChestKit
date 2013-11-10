@@ -132,7 +132,8 @@ public class ChestKitsPlugin extends JavaPlugin {
 			}
 			if (args.length < 3) {
 				sender.sendMessage(ChatColor.RED + "You must specify how long to set the cooldown to.");
-				sender.sendMessage(ChatColor.RED + "You may set the cooldown to 0 to remove it.")
+				sender.sendMessage(ChatColor.RED + "You may set the cooldown to 0 to remove it.");
+				return true;
 			}
 
 			String kitName = args[1];
