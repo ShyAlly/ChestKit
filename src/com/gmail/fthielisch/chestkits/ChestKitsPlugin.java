@@ -23,7 +23,8 @@ public class ChestKitsPlugin extends JavaPlugin {
 	public static final String LORE_KEY = "Contains a bunch of items!";
 
 	private ChestKitsConfiguration config = null;
-
+	private ChestKitsCooldownManager cooldownManager = new ChestKitsCooldownManager();
+	
 	@Override
 	public void onEnable() {
 		config = new ChestKitsConfiguration(this.getConfig(), this.getLogger());
@@ -85,6 +86,19 @@ public class ChestKitsPlugin extends JavaPlugin {
 
 			if (!sender.hasPermission("ckit.get." + kitName) && !sender.hasPermission("ckit.get.*")) {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that kit.");
+				return true;
+			}
+			
+			// 
+			long cooldownPeriod;
+			if (fromConsole) {
+				cooldownPeriod = 0;
+			} else {
+				cooldownPeriod = cooldownManager.getCooldownPeriod(toGive, kit);
+			}
+			
+			if (cooldownPeriod > 0) {
+				sender.sendMessage(ChatColor.RED + "This kit is currently on cooldown! Please wait another " + (cooldownPeriod / 1000) + " seconds.");
 				return true;
 			}
 
