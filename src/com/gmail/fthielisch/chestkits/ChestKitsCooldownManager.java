@@ -34,7 +34,6 @@ public class ChestKitsCooldownManager {
 		Map<String, Long> record = getRecord(p.getName());
 		
 		Long lastAccess = record.get(kit.getName());
-		record.put(kit.getName(), Long.valueOf(System.currentTimeMillis()));
 		
 		if (lastAccess == null) {
 			return 0;
@@ -45,5 +44,10 @@ public class ChestKitsCooldownManager {
 		
 		// Return the time until the cooldown expires (if cooldown > time elapsed) or 0 if already expired
 		return Math.max(kit.getCooldown() - timeDifference, 0);
+	}
+	
+	public void setAccessTime(Player p, ChestKitsKit kit) {
+		Map<String, Long> record = getRecord(p.getName());		
+		record.put(kit.getName(), Long.valueOf(System.currentTimeMillis()));
 	}
 }

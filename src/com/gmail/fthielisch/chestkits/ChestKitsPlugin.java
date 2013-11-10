@@ -24,7 +24,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 
 	private ChestKitsConfiguration config = null;
 	private ChestKitsCooldownManager cooldownManager = new ChestKitsCooldownManager();
-	
+
 	@Override
 	public void onEnable() {
 		config = new ChestKitsConfiguration(this.getConfig(), this.getLogger());
@@ -88,17 +88,18 @@ public class ChestKitsPlugin extends JavaPlugin {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that kit.");
 				return true;
 			}
-			
-			// 
+
+			//
 			long cooldownPeriod;
 			if (fromConsole) {
 				cooldownPeriod = 0;
 			} else {
 				cooldownPeriod = cooldownManager.getCooldownPeriod(toGive, kit);
 			}
-			
+
 			if (cooldownPeriod > 0) {
-				sender.sendMessage(ChatColor.RED + "This kit is currently on cooldown! Please wait for " + ChestKitsTimeFormatter.formatTime((int)Math.ceil(cooldownPeriod / 1000.0)) + ".");
+				sender.sendMessage(ChatColor.RED + "This kit is currently on cooldown! Please wait for "
+						+ ChestKitsTimeFormatter.formatTime((int) Math.ceil(cooldownPeriod / 1000.0)) + ".");
 				return true;
 			}
 
@@ -112,6 +113,10 @@ public class ChestKitsPlugin extends JavaPlugin {
 				sender.sendMessage(ChatColor.RED + "Your inventory is too full to hold the kit.");
 			} else if (fromConsole) {
 				toGive.sendMessage(ChatColor.GREEN + "You have been given a " + kitName + " kit!");
+			} else {
+				// Only set the access time if they did receive the kit and it
+				// wasn't from the console
+				cooldownManager.setAccessTime(toGive, kit);
 			}
 			return true;
 		}
@@ -133,7 +138,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 				}
 				items.add(new ItemStack(is));
 			}
-			
+
 			ChestKitsKit kit = new ChestKitsKit(kitName, items);
 
 			config.addKit(kitName, kit);
@@ -156,7 +161,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 				sender.sendMessage(ChatColor.RED + "The kit '" + kitName + "' does not exist.");
 				return true;
 			}
-			
+
 			long cooldown;
 			try {
 				cooldown = Long.parseLong(args[2]);
@@ -164,7 +169,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 				sender.sendMessage("Invalid number provided for cooldown.");
 				return true;
 			}
-			
+
 			kit.setCooldown(cooldown);
 
 			sender.sendMessage("Kit '" + kitName + "' cooldown set to " + kit.getCooldown() + " milliseconds.");
@@ -195,23 +200,23 @@ public class ChestKitsPlugin extends JavaPlugin {
 
 			sender.sendMessage("Kits saved to file.");
 		} else if (args[0].equals("give")) {
-			
+
 			if (!sender.hasPermission("ckit.give")) {
 				sender.sendMessage(ChatColor.RED + "You do not have access to this command.");
-				return true;				
+				return true;
 			}
-			
+
 			toGive = sender.getServer().getPlayer(args[1]);
 			if (toGive == null || !toGive.isOnline()) {
 				sender.sendMessage("The player " + args[0] + " is not online!");
-				return true;				
+				return true;
 			}
-			
+
 			if (args.length < 3) {
 				sender.sendMessage(ChatColor.RED + "You must specify which kit to give the player!");
 				return true;
 			}
-			
+
 			String kitName = args[2];
 
 			ChestKitsKit kit = config.getKit(kitName);
