@@ -125,6 +125,34 @@ public class ChestKitsPlugin extends JavaPlugin {
 			config.addKit(kitName, kit);
 
 			sender.sendMessage("Kit '" + kitName + "' created. You may want to save the configuration.");
+		} else if (args[0].equals("cooldown")) {
+			if (!sender.hasPermission("ckit.cooldown")) {
+				sender.sendMessage(ChatColor.RED + "You are not allowed to give kits cooldowns.");
+				return true;
+			}
+			if (args.length < 3) {
+				sender.sendMessage(ChatColor.RED + "You must specify how long to set the cooldown to.");
+				sender.sendMessage(ChatColor.RED + "You may set the cooldown to 0 to remove it.")
+			}
+
+			String kitName = args[1];
+			ChestKitsKit kit = config.getKit(kitName);
+			if (kit == null) {
+				sender.sendMessage(ChatColor.RED + "The kit '" + kitName + "' does not exist.");
+				return true;
+			}
+			
+			long cooldown;
+			try {
+				cooldown = Long.parseLong(args[2]);
+			} catch (Exception e) {
+				sender.sendMessage("Invalid number provided for cooldown.");
+				return true;
+			}
+			
+			kit.setCooldown(cooldown);
+
+			sender.sendMessage("Kit '" + kitName + "' removed. You may want to save the configuration.");
 		} else if (args[0].equals("delete")) {
 			if (!sender.hasPermission("ckit.delete")) {
 				sender.sendMessage(ChatColor.RED + "You are not allowed to delete kits.");
