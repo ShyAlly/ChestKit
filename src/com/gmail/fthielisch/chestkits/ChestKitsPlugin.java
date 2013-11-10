@@ -75,29 +75,29 @@ public class ChestKitsPlugin extends JavaPlugin {
 		}
 
 		if (args.length == 1) {
-			String kit = args[0];
+			String kitName = args[0];
 
-			List<ItemStack> items = config.getKitContents(kit);
-			if (items == null) {
-				sender.sendMessage(ChatColor.RED + "The kit '" + kit + "' does not exist.");
+			ChestKitsKit kit = config.getKit(kitName);
+			if (kit == null) {
+				sender.sendMessage(ChatColor.RED + "The kit '" + kitName + "' does not exist.");
 				return true;
 			}
 
-			if (!sender.hasPermission("ckit.get." + kit) && !sender.hasPermission("ckit.get.*")) {
+			if (!sender.hasPermission("ckit.get." + kitName) && !sender.hasPermission("ckit.get.*")) {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that kit.");
 				return true;
 			}
 
 			ItemStack is = new ItemStack(Material.CHEST, 1);
 			ItemMeta meta = is.getItemMeta();
-			meta.setDisplayName("Kit " + kit);
+			meta.setDisplayName("Kit " + kitName);
 			meta.setLore(Arrays.asList(LORE_KEY));
 			is.setItemMeta(meta);
 
 			if (!toGive.getInventory().addItem(is).isEmpty()) {
 				sender.sendMessage(ChatColor.RED + "Your inventory is too full to hold the kit.");
 			} else if (fromConsole) {
-				toGive.sendMessage(ChatColor.GREEN + "You have been given a " + kit + " kit!");
+				toGive.sendMessage(ChatColor.GREEN + "You have been given a " + kitName + " kit!");
 			}
 			return true;
 		}
@@ -108,7 +108,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 				return true;
 			}
 
-			String kit = args[1];
+			String kitName = args[1];
 
 			Player p = toGive;
 
@@ -119,26 +119,28 @@ public class ChestKitsPlugin extends JavaPlugin {
 				}
 				items.add(new ItemStack(is));
 			}
+			
+			ChestKitsKit kit = new ChestKitsKit(kitName, items);
 
-			config.addKit(kit, items);
+			config.addKit(kitName, kit);
 
-			sender.sendMessage("Kit '" + kit + "' created. You may want to save the configuration.");
+			sender.sendMessage("Kit '" + kitName + "' created. You may want to save the configuration.");
 		} else if (args[0].equals("delete")) {
 			if (!sender.hasPermission("ckit.delete")) {
 				sender.sendMessage(ChatColor.RED + "You are not allowed to delete kits.");
 				return true;
 			}
 
-			String kit = args[1];
-			List<ItemStack> items = config.getKitContents(kit);
-			if (items == null) {
-				sender.sendMessage(ChatColor.RED + "The kit '" + kit + "' does not exist.");
+			String kitName = args[1];
+			ChestKitsKit kit = config.getKit(kitName);
+			if (kit == null) {
+				sender.sendMessage(ChatColor.RED + "The kit '" + kitName + "' does not exist.");
 				return true;
 			}
 
-			config.removeKit(kit);
+			config.removeKit(kitName);
 
-			sender.sendMessage("Kit '" + kit + "' removed. You may want to save the configuration.");
+			sender.sendMessage("Kit '" + kitName + "' removed. You may want to save the configuration.");
 		} else if (args[0].equals("save")) {
 			if (!sender.hasPermission("ckit.save")) {
 				sender.sendMessage(ChatColor.RED + "You do not have access to this command.");
@@ -166,29 +168,29 @@ public class ChestKitsPlugin extends JavaPlugin {
 				return true;
 			}
 			
-			String kit = args[2];
+			String kitName = args[2];
 
-			List<ItemStack> items = config.getKitContents(kit);
-			if (items == null) {
-				sender.sendMessage(ChatColor.RED + "The kit '" + kit + "' does not exist.");
+			ChestKitsKit kit = config.getKit(kitName);
+			if (kit == null) {
+				sender.sendMessage(ChatColor.RED + "The kit '" + kitName + "' does not exist.");
 				return true;
 			}
 
-			if (!sender.hasPermission("ckit.get." + kit) && !sender.hasPermission("ckit.get.*")) {
+			if (!sender.hasPermission("ckit.get." + kitName) && !sender.hasPermission("ckit.get.*")) {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that kit.");
 				return true;
 			}
 
 			ItemStack is = new ItemStack(Material.CHEST, 1);
 			ItemMeta meta = is.getItemMeta();
-			meta.setDisplayName("Kit " + kit);
+			meta.setDisplayName("Kit " + kitName);
 			meta.setLore(Arrays.asList(LORE_KEY));
 			is.setItemMeta(meta);
 
 			if (!toGive.getInventory().addItem(is).isEmpty()) {
 				sender.sendMessage(ChatColor.RED + "Your inventory is too full to hold the kit.");
 			} else {
-				toGive.sendMessage(ChatColor.GREEN + "You have been given a " + kit + " kit!");
+				toGive.sendMessage(ChatColor.GREEN + "You have been given a " + kitName + " kit!");
 			}
 		} else {
 			sender.sendMessage(ChatColor.RED + "Invalid secondary command. Valid secondary commands: create, delete, save config, give");
@@ -199,8 +201,8 @@ public class ChestKitsPlugin extends JavaPlugin {
 	}
 
 	public void addItemsToChest(Block b1, String kitName) {
-		List<ItemStack> items = config.getKitContents(kitName);
-		if (items == null) {
+		ChestKitsKit kit = config.getKit(kitName);
+		if (kit == null) {
 			getLogger().severe("Unknown kit was placed: " + kitName);
 			return;
 		}
@@ -218,7 +220,7 @@ public class ChestKitsPlugin extends JavaPlugin {
 		int slot = 0;
 		boolean updated = false;
 
-		Iterator<ItemStack> itms = items.iterator();
+		Iterator<ItemStack> itms = kit.getItems().iterator();
 		while (itms.hasNext()) {
 			ItemStack itm = new ItemStack(itms.next());
 

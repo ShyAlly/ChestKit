@@ -12,10 +12,10 @@ import org.bukkit.inventory.ItemStack;
 
 public class ChestKitsConfiguration {
 
-	private HashMap<String, List<ItemStack>> kits;
+	private HashMap<String, ChestKitsKit> kits;
 
 	public ChestKitsConfiguration(Configuration config, Logger log) {
-		kits = new HashMap<String, List<ItemStack>>();
+		kits = new HashMap<String, ChestKitsKit>();
 
 		List<String> listOfKits = config.getStringList("kits");
 		if (listOfKits != null) {
@@ -36,14 +36,19 @@ public class ChestKitsConfiguration {
 					}
 				}
 				
-				addKit(kitName, itemStacks);
+				long cooldown = config.getLong("kitcooldown." + kitName, 0L);
+				
+				ChestKitsKit kit = new ChestKitsKit(kitName, itemStacks);
+				kit.setCooldown(cooldown);
+				
+				addKit(kitName, kit);
 			}
 		}
 		
 		log.info("Successfully loaded " + kits.size() + " kits.");
 	}
 	
-	public List<ItemStack> getKitContents(String kit) {
+	public ChestKitsKit getKit(String kit) {
 		return kits.get(kit);
 	}
 
@@ -56,8 +61,10 @@ public class ChestKitsConfiguration {
 		FileConfiguration fc = plugin.getConfig();
 		fc.set("kits", kitNames);
 		
-		for (Entry<String, List<ItemStack>> entry : kits.entrySet()) {
-			fc.set("kititems." + entry.getKey(), entry.getValue());
+		for (Entry<String, ChestKitsKit> entry : kits.entrySet()) {
+			ChestKitsKit kit = entry.getValue();
+			fc.set("kititems." + entry.getKey(), kit.getItems());
+			fc.set("kitcooldown." + entry.getKey(), kit.getCooldown());
 		}
 		
 		plugin.saveConfig();
@@ -67,7 +74,7 @@ public class ChestKitsConfiguration {
 		kits.remove(kit);
 	}
 	
-	public void addKit(String kit, List<ItemStack> items) {
-		kits.put(kit, items);
+	public void addKit(String kitName, ChestKitsKit kit) {
+		kits.put(kitName, kit);
 	}
 }
