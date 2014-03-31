@@ -32,9 +32,11 @@ public class ChestKitsPlugin extends JavaPlugin {
 		this.getServer().getPluginManager().registerEvents(new ChestKitsListener(this), this);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player toGive;
+		
 		boolean fromConsole = false;
 		if (!(sender instanceof Player)) {
 			if (args.length == 0) {
@@ -42,7 +44,9 @@ public class ChestKitsPlugin extends JavaPlugin {
 				sender.sendMessage("Usage: /ckit (PLAYER) (command)");
 				return true;
 			}
+			// No better alternative than to use deprecated getPlayer()
 			toGive = sender.getServer().getPlayer(args[0]);
+			
 			if (toGive == null || !toGive.isOnline()) {
 				sender.sendMessage("The player " + args[0] + " is not online!");
 				return true;
